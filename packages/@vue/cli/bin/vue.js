@@ -3,16 +3,22 @@
 // Check node version before requiring/doing anything else
 // The user may be on a very old node version
 
+// chalk 一个可以修改终端输出字符样式的 npm 包
+// semver 用来 对版本号进行检查、比较等
 const { chalk, semver } = require('@vue/cli-shared-utils')
 const requiredVersion = require('../package.json').engines.node
+// leven 测量两字符串之间的差异<br/>
 const leven = require('leven')
 
+// 检查本地 node 版本
 function checkNodeVersion (wanted, id) {
   if (!semver.satisfies(process.version, wanted, { includePrerelease: true })) {
+    // 不满足版本 给出提示
     console.log(chalk.red(
       'You are using Node ' + process.version + ', but this version of ' + id +
       ' requires Node ' + wanted + '.\nPlease upgrade your Node version.'
     ))
+    // 退出终端
     process.exit(1)
   }
 }
@@ -26,6 +32,7 @@ const minimist = require('minimist')
 
 // enter debug mode when creating test repo
 if (
+  // slash 用于转换 Windows 反斜杠路径转换为正斜杠路径 \ => /
   slash(process.cwd()).indexOf('/packages/test') > 0 && (
     fs.existsSync(path.resolve(process.cwd(), '../@vue')) ||
     fs.existsSync(path.resolve(process.cwd(), '../../@vue'))
@@ -37,17 +44,20 @@ if (
 const program = require('commander')
 const loadCommand = require('../lib/util/loadCommand')
 
+// 输出辅助信息
 program
   .version(`@vue/cli ${require('../package').version}`)
   .usage('<command> [options]')
 
 program
   .command('create <app-name>')
+  // create <app-name> 后面的参数
   .description('create a new project powered by vue-cli-service')
   .option('-p, --preset <presetName>', 'Skip prompts and use saved or remote preset')
   .option('-d, --default', 'Skip prompts and use default preset')
   .option('-i, --inlinePreset <json>', 'Skip prompts and use inline JSON string as preset')
   .option('-m, --packageManager <command>', 'Use specified npm client when installing dependencies')
+  // npm 镜像
   .option('-r, --registry <url>', 'Use specified npm registry when installing dependencies (only for npm)')
   .option('-g, --git [message]', 'Force git initialization with initial commit message')
   .option('-n, --no-git', 'Skip git initialization')
@@ -58,6 +68,7 @@ program
   .option('-b, --bare', 'Scaffold project without beginner instructions')
   .option('--skipGetStarted', 'Skip displaying "Get started" instructions')
   .action((name, options) => {
+    // 判断是否输出了多个参数 (项目名)
     if (minimist(process.argv.slice(3))._.length > 1) {
       console.log(chalk.yellow('\n Info: You provided more than one argument. The first one will be used as the app\'s name, the rest are ignored.'))
     }

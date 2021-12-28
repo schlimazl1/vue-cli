@@ -52,9 +52,10 @@ module.exports = class Creator extends EventEmitter {
     this.name = name
     this.context = process.env.VUE_CLI_CONTEXT = context
     const { presetPrompt, featurePrompt } = this.resolveIntroPrompts()
-
+    // preset 选项
     this.presetPrompt = presetPrompt
     this.featurePrompt = featurePrompt
+    // 保存当前配置
     this.outroPrompts = this.resolveOutroPrompts()
     this.injectedPrompts = []
     this.promptCompleteCbs = []
@@ -276,7 +277,7 @@ module.exports = class Creator extends EventEmitter {
 
     generator.printExitLogs()
   }
-
+  // 执行命令
   run (command, args) {
     if (!args) { [command, ...args] = command.split(/\s+/) }
     return execa(command, args, { cwd: this.context })
@@ -391,12 +392,14 @@ module.exports = class Creator extends EventEmitter {
   }
 
   getPresets () {
-    const savedOptions = loadOptions()
+    const savedOptions = loadOptions() // 缓存的配置对象
     return Object.assign({}, savedOptions.presets, defaults.presets)
   }
 
   resolveIntroPrompts () {
+    // 获取预设选项
     const presets = this.getPresets()
+    // 返回一个给定对象自身可枚举属性的键值对数组 不枚举原型链
     const presetChoices = Object.entries(presets).map(([name, preset]) => {
       let displayName = name
       if (name === 'default') {
